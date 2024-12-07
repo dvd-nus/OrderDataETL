@@ -52,6 +52,18 @@ def execute_query(query, db_name=DB_NAME):
     with sqlite3.connect(db_name) as conn:
         return conn.execute(query).fetchall()
 
+def validate_query(description, query, db_name=DB_NAME):
+    """Executes a query and handles specific validations based on description."""
+    result = execute_query(query, db_name)
+    if description == "Duplicate Count":
+        duplicate_count = result[0][0]  # Extract the count of duplicates
+        if duplicate_count > 0:
+            print(f"{description}: Duplicates detected! Count: {duplicate_count}")
+        else:
+            print(f"{description}: No duplicates found.")
+    else:
+        print(f"{description}: {result}")
+
 # Main Processing Logic
 def main():
     # Initialize Spark
@@ -72,12 +84,19 @@ def main():
         "Total Records": "SELECT COUNT(*) FROM sales_data",
         "Total Sales by Region": "SELECT region, SUM(net_sale) AS total_sales FROM sales_data GROUP BY region",
         "Average Sales per Transaction": "SELECT AVG(net_sale) AS avg_sales FROM sales_data",
-        "Duplicate Order IDs": "SELECT OrderId, COUNT(*) FROM sales_data GROUP BY OrderId HAVING COUNT(*) > 1"
+        "Duplicate Count": """ SELECT COUNT(*) AS duplicate_count
+                                FROM (
+                                    SELECT OrderId
+                                    FROM sales_data
+                                    GROUP BY OrderId
+                                    HAVING COUNT(*) > 1
+                                ) AS duplicates
+                            """
     }
 
     # Print validation results
     for description, query in queries.items():
-        print(f"{description}: {execute_query(query)}")
+        validate_query(description, query)
 
 if __name__ == "__main__":
     main()
