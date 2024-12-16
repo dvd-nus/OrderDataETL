@@ -32,14 +32,13 @@ def calculate_sales_metrics(df):
         StructField("Amount", StringType(), True)  # Convert to double later
     ])
     return (
-        df.withColumn("total_sales", col("QuantityOrdered") * col("ItemPrice"))
-          .withColumn("PromotionDiscountAmount",
-                      from_json(col("PromotionDiscount"), promo_discount_schema)
-                      .getItem("Amount")
-                      .cast(DoubleType()))
-          .withColumn("net_sale", col("total_sales") - col("PromotionDiscountAmount"))
-          .dropDuplicates(["OrderId"])
-          .filter(col("net_sale") > 0)
+        df.withColumn("total_sales", col("QuantityOrdered") * col("ItemPrice")) \
+        .withColumn("net_sale", col("total_sales") - 
+                   from_json(col("PromotionDiscount"), promo_discount_schema)
+                   .getItem("Amount")
+                   .cast(DoubleType())) \
+        .dropDuplicates(["OrderId"]) \
+        .filter(col("net_sale") > 0)
     )
 
 # Database Operations
