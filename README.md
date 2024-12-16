@@ -12,4 +12,4 @@ Create a folder named "data" in the same directory as the script. Place the sale
 `python order_data_etl.py`
 This will process the data, transform it, and store the results in an SQLite database (sales_data.db).
 
-Verify the SQLite database (sales_data.db) using any SQLite viewer or by viewing the results of the script.
+Verify the SQLite database (sales_data.db) using any SQLite viewer or by viewing the results of the SQL queries run at the end of the script.
